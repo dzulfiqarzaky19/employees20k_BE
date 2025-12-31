@@ -32,18 +32,18 @@ export const getEmployees = async (req: Request, res: Response, next: NextFuncti
     try {
         const where = search ? {
             OR: [
-                { name: { contains: String(search), mode: 'insensitive' } },
-                { position: { contains: String(search), mode: 'insensitive' } },
+                { name: { contains: String(search), mode: 'insensitive' as const } },
+                { position: { contains: String(search), mode: 'insensitive' as const } },
             ],
         } : {};
 
         const orderBy = [
             {
-                [String(sortBy)]: order
+                [String(sortBy)]: order as 'asc' | 'desc'
             }, {
-                id: 'asc'
+                id: 'asc' as const
             }
-        ]
+        ] as any
 
         const [employees, meta] = await Promise.all([
             prisma.employee.findMany({ where, skip, take, orderBy }),
@@ -57,11 +57,11 @@ export const getEmployees = async (req: Request, res: Response, next: NextFuncti
         return res.json({
             data: employees,
             meta: {
-                total: meta._count,
+                total: meta._count || 0,
                 page: Number(page),
                 limit: Number(limit),
-                totalPages: Math.ceil(meta._count / Number(limit)),
-                totalSalary: meta._sum.salary,
+                totalPages: Math.ceil((meta._count || 0) / Number(limit)),
+                totalSalary: meta._sum?.salary || 0,
             }
         });
     } catch (error) {
