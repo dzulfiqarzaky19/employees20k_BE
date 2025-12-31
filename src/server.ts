@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import authRoutes from './routes/auth.routes'
 import employeeRoutes from "./routes/employee.routes";
+import importRoutes from "./routes/import.routes";
 import 'dotenv/config';
 import { errorHandler } from "./middlewares/errorHandler";
 
@@ -16,6 +17,7 @@ app.use(express.json());
 
 app.use('/auth', authRoutes)
 app.use('/employee', employeeRoutes)
+app.use('/import', importRoutes)
 
 app.use(errorHandler)
 

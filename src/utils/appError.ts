@@ -12,7 +12,15 @@ export const PrismaErrorMap: Record<string, { status: number; message: string }>
     P2003: { status: 400, message: 'This operation violates a database relationship.' },
 };
 
-export const createAppError = (input: any) => {
+export const createAppError = (input: any, message?: string) => {
+    if (message) {
+        return {
+            statusCode: input,
+            message: message,
+            isOperational: true,
+        };
+    }
+
     if (typeof input === 'number') {
         return {
             statusCode: input,
