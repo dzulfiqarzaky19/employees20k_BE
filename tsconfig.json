@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "module": "nodenext",
+    "target": "esnext",
+    "moduleResolution": "nodenext", // Add this to match nodenext
+    "esModuleInterop": true, // Crucial for importing helmet/morgan
+    "allowSyntheticDefaultImports": true, // Allows "import express from 'express'"
+    "rootDir": "./src", // Uncomment these to organize your build
+    "outDir": "./dist",
+    // ... rest of your settings
+    "strict": true,
+    "skipLibCheck": true
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}
