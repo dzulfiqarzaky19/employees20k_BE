@@ -37,16 +37,17 @@ export const getEmployees = async (req: Request, res: Response, next: NextFuncti
             ],
         } : {};
 
-        const orderBy = [
-            {
-                [String(sortBy)]: order as 'asc' | 'desc'
-            }, {
-                id: 'asc' as const
-            }
-        ] as any
 
         const [employees, meta] = await Promise.all([
-            prisma.employee.findMany({ where, skip, take, orderBy }),
+            prisma.employee.findMany({
+                where, skip, take, orderBy: [
+                    {
+                        [String(sortBy)]: order as 'asc' | 'desc'
+                    }, {
+                        id: 'asc' as const
+                    }
+                ]
+            }),
             prisma.employee.aggregate({
                 where,
                 _count: true,
