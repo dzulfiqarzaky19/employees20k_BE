@@ -1,21 +1,23 @@
 import { NextFunction, Request, Response } from "express";
 import prisma from "../config/prisma";
 import { createAppError } from "../utils/appError";
+import { employeeQueue } from "../config/queue";
+import { IAuthRequest } from "../middlewares/auth";
 
-export const createEmployee = async (req: Request, res: Response, next: NextFunction) => {
+export const createEmployee = async (req: IAuthRequest, res: Response, next: NextFunction) => {
     try {
         const { name, age, position, salary } = req.body;
+        const userId = req.adminId;
 
-        const employee = await prisma.employee.create({
-            data: {
-                name,
-                age: parseInt(age, 10),
-                position,
-                salary: Number(salary),
-            },
+        await employeeQueue.add('create-employee', {
+            userId,
+            name,
+            age: parseInt(age),
+            position,
+            salary: parseFloat(salary),
         });
 
-        return res.json(employee);
+        res.status(202).json({ message: 'Employee creation is being processed' });
     } catch (error) {
         return next(createAppError(error));
     }
@@ -49,7 +51,6 @@ export const updateEmployee = async (req: Request, res: Response, next: NextFunc
         const { id } = req.params;
         const { name, age, position, salary } = req.body;
 
-        console.log(id)
         const employee = await prisma.employee.update({
             where: {
                 id,

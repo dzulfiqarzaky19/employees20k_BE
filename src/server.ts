@@ -7,8 +7,17 @@ import employeeRoutes from "./routes/employee.routes";
 import importRoutes from "./routes/import.routes";
 import 'dotenv/config';
 import { errorHandler } from "./middlewares/errorHandler";
+import { initSocket } from './config/socket';
+import http from 'http';
+
+import './workers/import.worker';
+import './workers/employee.worker';
+
 
 const app = express();
+
+const server = http.createServer(app);
+initSocket(server);
 
 app.use(cors());
 app.use(helmet());
