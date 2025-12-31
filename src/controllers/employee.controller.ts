@@ -24,9 +24,46 @@ export const createEmployee = async (req: IAuthRequest, res: Response, next: Nex
 }
 
 export const getEmployees = async (req: Request, res: Response, next: NextFunction) => {
+    const { page = 1, limit = 10, search = '', sortBy = 'createdAt', order = 'desc' } = req.query;
+
+    const skip = (Number(page) - 1) * Number(limit);
+    const take = Number(limit);
+
     try {
-        const employees = await prisma.employee.findMany();
-        return res.json(employees);
+        const where = search ? {
+            OR: [
+                { name: { contains: String(search), mode: 'insensitive' } },
+                { position: { contains: String(search), mode: 'insensitive' } },
+            ],
+        } : {};
+
+        const orderBy = [
+            {
+                [String(sortBy)]: order
+            }, {
+                id: 'asc'
+            }
+        ]
+
+        const [employees, meta] = await Promise.all([
+            prisma.employee.findMany({ where, skip, take, orderBy }),
+            prisma.employee.aggregate({
+                where,
+                _count: true,
+                _sum: { salary: true }
+            })
+        ]);
+
+        return res.json({
+            data: employees,
+            meta: {
+                total: meta._count,
+                page: Number(page),
+                limit: Number(limit),
+                totalPages: Math.ceil(meta._count / Number(limit)),
+                totalSalary: meta._sum.salary,
+            }
+        });
     } catch (error) {
         return next(createAppError(error));
     }
