@@ -1,15 +1,15 @@
-import express from "express";
+import http from 'http';
 import cors from "cors";
 import helmet from 'helmet';
 import morgan from 'morgan';
-import authRoutes from './routes/auth.routes'
-import employeeRoutes from "./routes/employee.routes";
+import express from "express";
+import authRoutes from './routes/auth.routes';
 import importRoutes from "./routes/import.routes";
-import 'dotenv/config';
+import employeeRoutes from "./routes/employee.routes";
 import { errorHandler } from "./middlewares/errorHandler";
 import { initSocket } from './config/socket';
-import http from 'http';
 
+import 'dotenv/config';
 import './workers/import.worker';
 import './workers/employee.worker';
 

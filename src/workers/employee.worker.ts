@@ -7,10 +7,7 @@ export const employeeWorker = new Worker(
     'employee-queue',
     async (job: Job) => {
         const io = getIO();
-
         const { userId, name, age, position, salary } = job.data;
-
-        console.log(`Processing job ${job.id}: Create employee ${job.data.name}`);
 
         await new Promise((resolve) => setTimeout(resolve, 2000));
 

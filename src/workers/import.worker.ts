@@ -14,8 +14,6 @@ export const importWorker = new Worker(
         let batch: any[] = [];
         const BATCH_SIZE = 1000;
 
-        console.log('Importing file: ' + filePath);
-
         try {
             if (!fs.existsSync(filePath)) {
                 throw new Error('File not found at ' + filePath);
@@ -57,8 +55,6 @@ export const importWorker = new Worker(
                 count += batch.length;
             }
 
-            console.log('Import complete: ' + count + ' employees added to the database');
-
             io.to(userId).emit('import-progress', { progress: 100, count });
 
             io.to(userId).emit('notification', {
@@ -67,8 +63,6 @@ export const importWorker = new Worker(
             });
 
         } catch (error: any) {
-            console.log('Import failed: ' + error.message);
-
             io.to(userId).emit('notification', {
                 type: 'IMPORT_ERROR',
                 message: `Import failed: ${error.message}`,
@@ -76,8 +70,6 @@ export const importWorker = new Worker(
 
             throw error;
         } finally {
-            console.log('Cleaning up file: ' + filePath);
-
             if (fs.existsSync(filePath)) {
                 fs.unlinkSync(filePath);
                 console.log(`Cleaned up file: ${filePath}`);
