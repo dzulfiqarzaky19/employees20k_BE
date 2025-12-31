@@ -3,22 +3,30 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { IAuthRequest } from '../middlewares/auth';
 import { createAppError } from '../utils/appError';
+import prisma from '../config/prisma';
 
-const admin = {
-    id: 1,
-    password: '$2b$10$lG4JwNaWbWJTB16JMgPwVOT5SIDWaU.cj7hEWiBXt9krWhu.BA.T6',
-    username: 'admin'
-}
 
 export const login = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { username, password } = req.body;
+        const { loginIdentifier, password } = req.body;
 
-        const passwordHash = await bcrypt.hash(password, 10);
+
+        const admin = await prisma.admin.findFirst({
+            where: {
+                OR: [
+                    { username: loginIdentifier },
+                    { email: loginIdentifier }
+                ]
+            }
+        });
+
+
+        if (!admin) {
+            return next(createAppError(401))
+        }
 
         const isMatch = await bcrypt.compare(password, admin.password);
 
-        console.log(password, admin.password, passwordHash)
 
         if (!isMatch) {
             return next(createAppError(401))
@@ -32,6 +40,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
 
         return res.json({ token });
     } catch (error) {
+        return next(createAppError(error))
     }
 }
 
@@ -40,11 +49,22 @@ export const getMe = async (req: IAuthRequest, res: Response, next: NextFunction
 
         const adminId = req.adminId;
 
+        const admin = await prisma.admin.findUnique({
+            where: {
+                id: adminId
+            }
+        });
+
+        if (!admin) {
+            return next(createAppError(401))
+        }
+
         return res.json({
             id: admin.id,
-            username: admin.username
+            username: admin.username,
+            email: admin.email
         });
     } catch (error) {
-        return next(createAppError(500))
+        return next(createAppError(error))
     }
 }

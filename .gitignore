@@ -1,2 +1,32 @@
-node_modules
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Environment variables (CRITICAL: Never leak your DB password)
 .env
+.env.local
+.env.production
+
+# Prisma / Database
+# If you are not using a custom output, Prisma generates inside node_modules. 
+# But if you ever go back to src/generated, ignore it here:
+/src/generated
+
+# TypeScript / Build output
+dist/
+build/
+*.tsbuildinfo
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+logs/
+*.log
+
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# Docker
+.dockerignore

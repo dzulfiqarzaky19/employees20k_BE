@@ -4,6 +4,7 @@ import { createAppError } from '../utils/appError';
 
 interface AdminPayload {
     adminId: string;
+    adminEmail: string;
     iat?: number;
     exp?: number;
 }
@@ -14,6 +15,7 @@ const isAdminPayload = (payload: any): payload is AdminPayload => {
 
 export interface IAuthRequest extends Request {
     adminId?: string;
+    adminEmail?: string;
 }
 
 export const authentication = (req: IAuthRequest, res: Response, next: NextFunction) => {
@@ -34,6 +36,7 @@ export const authentication = (req: IAuthRequest, res: Response, next: NextFunct
         }
 
         req.adminId = decoded.adminId;
+        req.adminEmail = decoded.adminEmail;
         next();
     } catch (error) {
         return next(createAppError(401));
