@@ -12,13 +12,13 @@ export const initSocket = (server: HttpServer) => {
     });
 
     io.on('connection', (socket) => {
-        const userId = socket.handshake.query.userId as string;
+        // const userId = socket.handshake.query.userId as string;
 
-        if (userId) {
-            socket.join(userId);
+        // if (userId) {
+        //     socket.join(userId);
 
-            console.log(`User ${userId} joined room. Socket ID: ${socket.id}`);
-        }
+        //     console.log(`User ${userId} joined room. Socket ID: ${socket.id}`);
+        // }
 
         socket.on('disconnect', () => {
             console.log('Client disconnected:', socket.id);

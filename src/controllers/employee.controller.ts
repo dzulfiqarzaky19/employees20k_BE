@@ -37,8 +37,7 @@ export const getEmployees = async (req: Request, res: Response, next: NextFuncti
             ],
         } : {};
 
-
-        const [employees, meta] = await Promise.all([
+        const [employees, meta, uniquPosition] = await Promise.all([
             prisma.employee.findMany({
                 where, skip, take, orderBy: [
                     {
@@ -51,7 +50,13 @@ export const getEmployees = async (req: Request, res: Response, next: NextFuncti
             prisma.employee.aggregate({
                 where,
                 _count: true,
-                _sum: { salary: true }
+                _sum: { salary: true },
+            }),
+
+            prisma.employee.groupBy({
+                by: ['position'],
+                where,
+                _count: true,
             })
         ]);
 
@@ -63,6 +68,7 @@ export const getEmployees = async (req: Request, res: Response, next: NextFuncti
                 limit: Number(limit),
                 totalPages: Math.ceil((meta._count || 0) / Number(limit)),
                 totalSalary: meta._sum?.salary || 0,
+                totalDepartement: uniquPosition?.length || 0,
             }
         });
     } catch (error) {

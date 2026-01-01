@@ -43,7 +43,7 @@ export const importWorker = new Worker(
                     batch = [];
                     const total = job.data.totalRows || 20000;
 
-                    io.to(userId).emit('import-progress', {
+                    io.emit('import-progress', {
                         progress: Math.min(Math.round((count / total) * 100), 99),
                         count
                     });
@@ -55,15 +55,15 @@ export const importWorker = new Worker(
                 count += batch.length;
             }
 
-            io.to(userId).emit('import-progress', { progress: 100, count });
+            io.emit('import-progress', { progress: 100, count });
 
-            io.to(userId).emit('notification', {
+            io.emit('notification', {
                 type: 'IMPORT_SUCCESS',
                 message: `Import complete! ${count.toLocaleString()} employees added to the database.`,
             });
 
         } catch (error: any) {
-            io.to(userId).emit('notification', {
+            io.emit('notification', {
                 type: 'IMPORT_ERROR',
                 message: `Import failed: ${error.message}`,
             });

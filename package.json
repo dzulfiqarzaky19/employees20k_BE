@@ -4,7 +4,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
-    "test": "jest"
+    "test": "jest",
+    "reset": "ts-node scripts/clean-slate.ts"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"

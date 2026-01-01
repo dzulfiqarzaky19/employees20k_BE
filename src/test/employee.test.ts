@@ -199,7 +199,7 @@ describe('Employee CRUD Tests', () => {
 
             expect(prisma.employee.findMany).toHaveBeenCalledWith({
                 where: {},
-                skip: 40, // (3-1) * 20
+                skip: 40, 
                 take: 20,
                 orderBy: [{ createdAt: 'desc' }, { id: 'asc' }],
             });

@@ -21,7 +21,7 @@ export const employeeWorker = new Worker(
         });
 
 
-        io.to(userId).emit('notification', {
+        io.emit('notification', {
             type: 'EMPLOYEE_CREATED',
             message: `Employee ${employee.name} has been successfully added.`,
             data: employee,
