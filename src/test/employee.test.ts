@@ -13,6 +13,7 @@ jest.mock('../config/prisma', () => ({
             update: jest.fn(),
             delete: jest.fn(),
             aggregate: jest.fn(),
+            groupBy: jest.fn(),
         },
     },
 }));
@@ -103,10 +104,18 @@ describe('Employee CRUD Tests', () => {
             const mockAggregate = {
                 _count: 10,
                 _sum: { salary: 650000 },
+
+            };
+
+            const groupBy = {
+                _count: {
+                    position: 2,
+                },
             };
 
             (prisma.employee.findMany as jest.Mock).mockResolvedValue(mockEmployees);
             (prisma.employee.aggregate as jest.Mock).mockResolvedValue(mockAggregate);
+            (prisma.employee.groupBy as jest.Mock).mockResolvedValue([groupBy]);
 
             const res = await request(app)
                 .get('/api/employees')
@@ -127,6 +136,7 @@ describe('Employee CRUD Tests', () => {
                 limit: 10,
                 totalPages: 1,
                 totalSalary: 650000,
+                totalDepartement: 1,
             });
         });
 
@@ -195,11 +205,12 @@ describe('Employee CRUD Tests', () => {
                 limit: 20,
                 totalPages: 3,
                 totalSalary: 1000000,
+                totalDepartement: 0,
             });
 
             expect(prisma.employee.findMany).toHaveBeenCalledWith({
                 where: {},
-                skip: 40, 
+                skip: 40,
                 take: 20,
                 orderBy: [{ createdAt: 'desc' }, { id: 'asc' }],
             });

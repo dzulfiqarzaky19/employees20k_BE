@@ -5,7 +5,10 @@
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "test": "jest",
-    "reset": "ts-node scripts/clean-slate.ts"
+    "generate-csv": "ts-node scripts/generate_csv.ts",
+    "reset": "ts-node scripts/clean_slate.ts",
+    "seed": "ts-node scripts/seed_employee.ts",
+    "build": "tsc"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
