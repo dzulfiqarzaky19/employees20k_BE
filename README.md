@@ -81,6 +81,9 @@ If you prefer to run the Node.js application locally:
 -   `npm run reset`: Reset the database (clean slate).
 -   `npm run generate-csv`: Generate a CSV file with random employee data.
 
+## Collections
+- HTTPIE collections inside `collections/httpie-collection-ems_BE.json`
+
 ## Project Structure
 
 -   `src/`: Source code
