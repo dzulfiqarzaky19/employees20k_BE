@@ -18,6 +18,8 @@ The easiest way to start the application is using Docker. This will set up the A
     cd employees20k_BE
     ```
 
+    then create .env, copy from .env.example
+
 2.  **Start the services**:
     ```bash
     docker compose up --build
