@@ -6,8 +6,7 @@ import { getIO } from '../config/socket';
 export const employeeWorker = new Worker(
     'employee-queue',
     async (job: Job) => {
-        const io = getIO();
-        const { userId, name, age, position, salary } = job.data;
+        const { name, age, position, salary } = job.data;
 
         await new Promise((resolve) => setTimeout(resolve, 2000));
 
@@ -20,22 +19,27 @@ export const employeeWorker = new Worker(
             },
         });
 
-
-        io.emit('notification', {
-            type: 'EMPLOYEE_CREATED',
-            message: `Employee ${employee.name} has been successfully added.`,
-            data: employee,
-        });
-
         return employee;
     },
     { connection }
 );
 
-employeeWorker.on('completed', (job) => {
+employeeWorker.on('completed', (job, result) => {
     console.log(`Job ${job.id} completed!`);
+    const io = getIO();
+    io.emit('notification', {
+        type: 'EMPLOYEE_CREATED',
+        message: `Employee ${result.name} has been successfully added.`,
+        data: result,
+    });
+
 });
 
 employeeWorker.on('failed', (job, err) => {
     console.error(`Job ${job?.id} failed with ${err.message}`);
+    const io = getIO();
+    io.emit('notification', {
+        type: 'EMPLOYEE_ERROR',
+        message: `Failed to create employee ${job?.data.name}: ${err.message}`,
+    });
 });
