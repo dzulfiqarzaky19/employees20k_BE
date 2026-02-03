@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { createAppError } from '../utils/appError';
+import { createAppError } from '../errors/AppError';
 
 interface AdminPayload {
     adminId: string;

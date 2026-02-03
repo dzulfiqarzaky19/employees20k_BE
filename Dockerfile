@@ -6,7 +6,7 @@ FROM node:18-alpine AS builder
 WORKDIR /app
 
 COPY package*.json ./
-COPY prisma ./prisma/
+COPY src/models/prisma ./src/models/prisma/
 
 RUN npm ci 
 
@@ -28,7 +28,7 @@ WORKDIR /app
 COPY --from=builder --chown=node:node /app/package*.json ./
 COPY --from=builder --chown=node:node /app/node_modules ./node_modules
 COPY --from=builder --chown=node:node /app/dist ./dist
-COPY --from=builder --chown=node:node /app/prisma ./prisma
+COPY --from=builder --chown=node:node /app/src/models/prisma ./src/models/prisma
 COPY --chown=node:node ./scripts/entrypoint.sh ./
 
 RUN mkdir -p /app/uploads && chown -R node:node /app/uploads
@@ -40,4 +40,4 @@ ENV NODE_ENV=production
 EXPOSE 3000
 
 ENTRYPOINT ["./entrypoint.sh"]
-CMD ["node", "dist/src/server.js"]
+CMD ["node", "dist/src/index.js"]

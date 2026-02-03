@@ -7,7 +7,7 @@ npx prisma migrate deploy
 
 # Run seeding
 echo "Seeding initial data..."
-node dist/prisma/seed.js 
+node dist/src/models/prisma/seed.js 
 
 echo "Starting Server..."
 exec "$@"

@@ -1,70 +1,29 @@
 import { NextFunction, Request, Response } from 'express';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import { IAuthRequest } from '../middlewares/auth';
-import { createAppError } from '../utils/appError';
-import prisma from '../config/prisma';
+import { AuthService } from '../services/auth.service';
+import { createAppError } from '../errors/AppError'; // Updated import path
+import { IAuthRequest } from '../middleware/auth.middleware';
 
+const authService = new AuthService();
 
 export const login = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { loginIdentifier, password } = req.body;
-
-
-        const admin = await prisma.admin.findFirst({
-            where: {
-                OR: [
-                    { username: loginIdentifier },
-                    { email: loginIdentifier }
-                ]
-            }
-        });
-
-
-        if (!admin) {
-            return next(createAppError(401))
-        }
-
-        const isMatch = await bcrypt.compare(password, admin.password);
-
-
-        if (!isMatch) {
-            return next(createAppError(401))
-        }
-
-        const token = jwt.sign(
-            { adminId: admin.id },
-            process.env.JWT_SECRET!,
-            { expiresIn: '24h' }
-        );
-
-        return res.json({ token });
+        const result = await authService.login(req.body);
+        return res.json(result);
     } catch (error) {
-        return next(createAppError(error))
+        return next(error); // Pass the error directly, AppError logic handles it or middleware
     }
 }
 
 export const getMe = async (req: IAuthRequest, res: Response, next: NextFunction) => {
     try {
-
         const adminId = req.adminId;
-
-        const admin = await prisma.admin.findUnique({
-            where: {
-                id: adminId
-            }
-        });
-
-        if (!admin) {
-            return next(createAppError(401))
+        if (!adminId) { // extra safety
+            return next(createAppError(401, 'Unauthorized'));
         }
 
-        return res.json({
-            id: admin.id,
-            username: admin.username,
-            email: admin.email
-        });
+        const result = await authService.getMe(adminId);
+        return res.json(result);
     } catch (error) {
-        return next(createAppError(error))
+        return next(error);
     }
 }

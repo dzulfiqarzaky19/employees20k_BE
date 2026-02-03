@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "test": "jest",
     "generate-csv": "ts-node scripts/generate_csv.ts",
     "reset": "ts-node scripts/clean_slate.ts",
@@ -11,7 +11,8 @@
     "build": "tsc"
   },
   "prisma": {
-    "seed": "ts-node prisma/seed.ts"
+    "schema": "src/models/prisma/schema.prisma",
+    "seed": "ts-node src/models/prisma/seed.ts"
   },
   "repository": {
     "type": "git",

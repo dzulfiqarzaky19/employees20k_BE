@@ -86,11 +86,63 @@ If you prefer to run the Node.js application locally:
 
 ## Project Structure
 
--   `src/`: Source code
-    -   `controllers/`: Request handlers
-    -   `routes/`: API routes
-    -   `services/`: Business logic
-    -   `test/`: Unit tests
--   `prisma/`: Database schema and seed scripts
--   `scripts/`: Utility scripts
--   `docker-compose.yml`: Docker services configuration
+```
+project-root/
+│
+├── src/
+│   ├── index.ts                # Entry point (bootstraps app)
+│   ├── app.ts                  # Express app setup (middleware, routes)
+│   │
+│   ├── config/                 # Configuration files
+│   │   ├── database.ts
+│   │   ├── env.ts
+│   │   ├── queue.ts
+│   │   └── socket.ts
+│   │
+│   ├── routes/                 # Routers (group endpoints)
+│   │   ├── auth.router.ts
+│   │   ├── employee.router.ts
+│   │   └── import.router.ts
+│   │
+│   ├── controllers/            # Controllers (handle req/res)
+│   │   ├── auth.controller.ts
+│   │   ├── employee.controller.ts
+│   │   └── import.controller.ts
+│   │
+│   ├── services/               # Business logic
+│   │   ├── auth.service.ts
+│   │   ├── employee.service.ts
+│   │   └── import.service.ts
+│   │
+│   ├── repositories/           # Data access layer
+│   │   ├── auth.repository.ts
+│   │   ├── employee.repository.ts
+│   │
+│   ├── dtos/                   # Data Transfer Objects
+│   │   └── login.dto.ts
+│   │
+│   ├── models/                 # ORM models/entities
+│   │   └── prisma/             # Prisma schema + generated client
+│   │       └── schema.prisma
+│   │
+│   ├── middleware/             # Middleware (auth, logging, validation)
+│   │   ├── auth.middleware.ts
+│   │   ├── error.middleware.ts
+│   │   └── multer.middleware.ts
+│   │
+│   ├── utils/                  # Helpers/utilities
+│   │   ├── hash.util.ts
+│   │   └── jwt.util.ts
+│   │
+│   ├── errors/                 # Custom error classes
+│   │   └── AppError.ts
+│   │
+│   └── workers/                # Background workers
+│       ├── employee.worker.ts
+│       └── import.worker.ts
+│
+├── tests/                      # Unit/integration tests
+├── .env                        # Environment variables
+├── package.json
+└── tsconfig.json
+```

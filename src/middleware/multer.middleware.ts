@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import multer from 'multer';
-import { createAppError } from '../utils/appError';
+import { createAppError } from '../errors/AppError';
 import path from 'path';
 import fs from 'fs';
 

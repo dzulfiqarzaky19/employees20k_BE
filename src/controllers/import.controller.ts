@@ -1,26 +1,28 @@
-import { createAppError } from "../utils/appError";
+import { createAppError } from "../errors/AppError";
 import { NextFunction, Response } from "express";
-import { IAuthRequest } from "../middlewares/auth";
-import { importQueue } from "../config/queue";
+import { ImportService } from "../services/import.service";
+import { IAuthRequest } from "../middleware/auth.middleware";
+
+const importService = new ImportService();
 
 export const importCSV = async (req: IAuthRequest, res: Response, next: NextFunction) => {
     try {
         const { file } = req;
 
         if (!file) {
-            return next(createAppError(400));
+            return next(createAppError(400, 'File not provided'));
         }
 
-        const filePath = file.path;
         const userId = req.adminId;
 
-        await importQueue.add('import-queue', { filePath, userId });
-
-        res.status(202).json({
-            message: 'CSV import started. You will receive real-time updates.',
-            fileId: file?.filename
+        const result = await importService.queueImport({
+            filePath: file.path,
+            userId,
+            filename: file.filename
         });
+
+        res.status(202).json(result);
     } catch (error) {
-        return next(createAppError(error));
+        return next(error);
     }
 }

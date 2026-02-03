@@ -1,6 +1,6 @@
 import { Worker, Job } from 'bullmq';
 import { connection } from '../config/queue';
-import prisma from '../config/prisma';
+import prisma from '../config/database';
 import { getIO } from '../config/socket';
 
 export const employeeWorker = new Worker(

@@ -1,7 +1,7 @@
 import { Worker, Job } from 'bullmq';
 import fs from 'fs';
 import { connection } from '../config/queue';
-import prisma from '../config/prisma';
+import prisma from '../config/database';
 import { getIO } from '../config/socket';
 import { parse } from 'csv-parse';
 import { Prisma } from '@prisma/client';
@@ -10,7 +10,7 @@ interface ImportJobData {
     filePath: string;
     userId?: string;
     totalRows?: number;
-    lastProcessedRow?: number;  // For resumability
+    lastProcessedRow?: number;
 }
 
 interface ImportJobResult {
@@ -33,7 +33,7 @@ export const importWorker = new Worker<ImportJobData, ImportJobResult>(
     'import-queue',
     async (job) => {
         const { filePath, lastProcessedRow = 0 } = job.data;
-        let count = lastProcessedRow;  // Resume from last processed count
+        let count = lastProcessedRow;
         let currentRow = 0;
         let batch: Prisma.EmployeeCreateManyInput[] = [];
         const BATCH_SIZE = 1000;
@@ -53,7 +53,6 @@ export const importWorker = new Worker<ImportJobData, ImportJobResult>(
         for await (const record of parser) {
             currentRow++;
 
-            // Skip already processed rows (resumability)
             if (currentRow <= lastProcessedRow) continue;
 
             if (!record.name || isNaN(parseInt(record.age))) continue;
@@ -71,7 +70,6 @@ export const importWorker = new Worker<ImportJobData, ImportJobResult>(
                 batch = [];
                 const total = job.data.totalRows || 20000;
 
-                // Persist progress for resumability
                 await job.updateData({
                     ...job.data,
                     lastProcessedRow: currentRow,
@@ -91,7 +89,6 @@ export const importWorker = new Worker<ImportJobData, ImportJobResult>(
 
         await job.updateProgress({ percentage: 100, count });
 
-        // Only delete file on successful completion
         if (fs.existsSync(filePath)) {
             fs.unlinkSync(filePath);
             console.log(`Cleaned up file: ${filePath}`);
